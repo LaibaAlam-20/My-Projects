@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard - KHAAB GHAR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(#bfbaa1, #e8e5d1);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .navbar {
+      background-color: #000;
+    }
+    .navbar-brand, .nav-link {
+      color: #fff !important;
+      font-weight: bold;
+    }
+    .logout-btn {
+      background-color: #3e2f22;
+      color: white;
+      border-radius: 10px;
+      padding: 8px 16px;
+      border: none;
+    }
+    .logout-btn:hover {
+      background-color: #2d2218;
+    }
+    .container {
+      margin-top: 80px;
+    }
+    .user-dashboard-header {
+      text-align: center;
+      color: #6a644c;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .room-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin: 15px;
+      width: 48%;
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+    .room-card:hover {
+      transform: translateY(-10px);
+    }
+    .btn-book {
+      background-color: #6a644c;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 20px;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-book:hover {
+      background-color: #5a4e3c;
+    }
+    .btn-history {
+      background-color: #5a4e3c;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 20px;
+      margin-top: 20px;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-history:hover {
+      background-color: #4b3e2f;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark position-fixed w-100 top-0" style="background-color: #5a4e3c;">
+    <div class="container-fluid d-flex justify-content-between">
+      <a class="navbar-brand" href="index.html">
+        <img src="logo.png" alt="Logo" width="40" height="40" class="me-2">
+        <span>KHAAB GHAR</span>
+      </a>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1 class="user-dashboard-header">Welcome to KHAAB GHAR, [User]</h1>
+    
+    <!-- Date Selection -->
+    <div class="mb-4">
+      <label for="checkIn" class="form-label">Check-in Date</label>
+      <input type="date" id="checkIn" class="form-control" min="">
+      
+      <label for="checkOut" class="form-label">Check-out Date</label>
+      <input type="date" id="checkOut" class="form-control" min="">
+      <button class="btn-book mt-3" onclick="loadAvailableRooms()">Show Available Rooms</button>
+    </div>
+
+    <div id="availableRooms" class="row">
+      <!-- Loading Rooms-->
+    </div>
+
+    <button class="btn-history" onclick="viewBookingHistory()">View Booking History</button>
+
+    <div id="bookingHistory" style="margin-top: 30px;">
+      <!-- Displaying Booking History -->
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Retrieve the current user from localStorage
+      const user = JSON.parse(localStorage.getItem("currentUser"));
+      if (!user || user.role !== "user") {
+        alert("Please login first to access the dashboard");
+        window.location.href = "login.html";
+      } else {
+        // Update welcome message with actual username
+        document.querySelector('.user-dashboard-header').textContent = 
+          `Welcome to KHAAB GHAR, ${user.username}`;
+      }
+    })();
+    function logout() {
+      localStorage.removeItem('currentUser'); // Must match login key
+      window.location.href = 'login.html';
+    }
+  
+    function loadAvailableRooms() {
+  const checkIn = document.getElementById("checkIn").value;
+  const checkOut = document.getElementById("checkOut").value;
+  const todayDate = new Date().toISOString().split('T')[0];
+
+  if (!checkIn || !checkOut) {
+    alert("Please select both check-in and check-out dates.");
+    return;
+  }
+
+  if (checkIn < todayDate) {
+    alert("Check-in date cannot be in the past.");
+    return;
+  }
+
+  if (checkOut <= checkIn) {
+    alert("Check-out date must be after check-in date.");
+    return;
+  }
+// Retrieve the rooms from localStorage
+  const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+  const availableRooms = rooms.filter(room => {
+    return room.status === 'available' && isRoomAvailable(room, checkIn, checkOut);
+  });
+
+  const availableRoomsDiv = document.getElementById('availableRooms');
+  availableRoomsDiv.innerHTML = '';
+
+  availableRooms.forEach(room => {
+    const roomCard = document.createElement('div');
+    roomCard.className = 'col-md-4';
+    roomCard.innerHTML = `
+      <div class="room-card">
+        <h5>${room.name}</h5>
+        <p>Type: ${room.type}</p>
+        <p>Price: ₹${room.price}</p>
+        <p>View: ${room.view}</p>
+        <p>${room.description}</p>
+        <button class="btn-book" onclick="bookRoom('${room.name}')">Book Now</button>
+      </div>
+    `;
+    availableRoomsDiv.appendChild(roomCard);
+  });
+}
+  
+    function isRoomAvailable(room, checkIn, checkOut) {
+      // Check if the room is already booked for the selected dates
+      const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+      
+      for (let booking of bookings) {
+        // Check if the booking is for the same room and overlaps with the selected dates
+        if (booking.roomName === room.name) {
+          // Convert date strings to Date objects for comparison
+          const bookingCheckIn = new Date(booking.checkIn);
+          const bookingCheckOut = new Date(booking.checkOut);
+          const selectedCheckIn = new Date(checkIn);
+          const selectedCheckOut = new Date(checkOut);
+  
+          // Check if the selected dates overlap with the booking dates
+          if ((selectedCheckIn >= bookingCheckIn && selectedCheckIn < bookingCheckOut) || 
+              (selectedCheckOut > bookingCheckIn && selectedCheckOut <= bookingCheckOut) || 
+              (selectedCheckIn <= bookingCheckIn && selectedCheckOut >= bookingCheckOut)) {
+            return false; // Room is not available for the selected dates
+          }
+        }
+      }
+      return true; // Room is available for the selected dates
+    }
+  
+    function bookRoom(roomName) {
+  const checkIn = document.getElementById("checkIn").value;
+  const checkOut = document.getElementById("checkOut").value;
+  const todayDate = new Date().toISOString().split('T')[0];
+
+  if (checkIn < todayDate) {
+    alert("Check-in date cannot be in the past.");
+    return;
+  }
+
+  const username = JSON.parse(localStorage.getItem("currentUser")).username;
+  const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+  const room = rooms.find(room => room.name === roomName);
+
+  if (room) {
+    room.status = 'booked'; // Mark as booked
+    localStorage.setItem('rooms', JSON.stringify(rooms));
+
+    // Save the booking information
+    const booking = {
+      username: username,
+      roomName: room.name,
+      checkIn: checkIn,
+      checkOut: checkOut
+    };
+
+    const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+    bookings.push(booking);
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+
+    alert(`You have successfully booked ${roomName}`);
+    loadAvailableRooms();  // Refresh available rooms
+  }
+}
+
+    function viewBookingHistory() {
+      const user = JSON.parse(localStorage.getItem('currentUser')) || {};
+      const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+      const userBookings = bookings.filter(booking => booking.username === user.username);
+  
+      const historyDiv = document.getElementById('bookingHistory');
+      historyDiv.innerHTML = '';
+  
+      if (userBookings.length === 0) {
+        historyDiv.innerHTML = '<p>No bookings found.</p>';
+      } else {
+        const table = document.createElement('table');
+        table.className = 'table table-bordered table-striped';
+        table.innerHTML = `
+          <thead class="table-dark">
+            <tr>
+              <th>Room Name</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${userBookings.map(booking => `
+              <tr>
+                <td>${booking.roomName}</td>
+                <td>${booking.checkIn}</td>
+                <td>${booking.checkOut}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        `;
+        historyDiv.appendChild(table);
+      }
+    }
+  // Redirect to login page if user is not logged in
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  if (!currentUser || currentUser.role !== "user") {
+    window.location.href = "login.html";
+  }
+</script>
+<script>
+
+    // Set min dates (keep this)
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("checkIn").setAttribute("min", today);
+      document.getElementById("checkOut").setAttribute("min", today);
+    });
+  </script>
+</body>
+</html>

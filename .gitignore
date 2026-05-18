@@ -1,0 +1,6 @@
+hci_env/
+venv/
+.venv/
+__pycache__/
+*.mp4
+*.pdf

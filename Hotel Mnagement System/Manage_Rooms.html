@@ -1,0 +1,214 @@
+<!-- Admin Dashboard: Manage Rooms -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Rooms - KHAAB GHAR</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Styling for page appearance */
+    body {
+      background: linear-gradient(#bfbaa1, #e8e5d1);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      margin-top: 100px;
+    }
+    .form-container {
+      background-color: #f9f8e6;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .form-container input, .form-container select, .form-container textarea {
+      margin-bottom: 10px;
+    }
+    .btn-submit {
+      background-color: #6a644c;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+    .btn-submit:hover {
+      background-color: #5a4e3c;
+    }
+    .btn-edit, .btn-delete {
+      background-color: #3498db;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 10px;
+      margin-right: 5px;
+    }
+    .btn-edit:hover, .btn-delete:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="text-center">Manage Rooms</h2>
+
+    <!-- Room form for adding new rooms -->
+    <div class="form-container">
+      <h4>Add Room</h4>
+      <form id="addRoomForm">
+        <input type="text" id="roomName" class="form-control" placeholder="Room Name" required>
+        <select id="roomType" class="form-select" required>
+          <option value="" disabled selected>Select Room Type</option>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
+          <option value="Suite">Suite</option>
+        </select>
+        <input type="number" id="roomPrice" class="form-control" placeholder="Price" required>
+        <select id="roomView" class="form-select" required>
+          <option value="" disabled selected>Select View</option>
+          <option value="Ocean">Ocean</option>
+          <option value="City">City</option>
+          <option value="Garden">Garden</option>
+        </select>
+        <textarea id="roomDescription" class="form-control" rows="3" placeholder="Room Description & Amenities" required></textarea>
+        <button type="submit" class="btn-submit">Add Room</button>
+      </form>
+    </div>
+
+    <!-- Search and Room Table Display -->
+    <div>
+      <input type="text" id="searchInput" class="form-control" placeholder="Search by Room Name or View...">
+      <button class="btn btn-outline-dark" onclick="toggleRoomView()">View All Rooms</button>
+      
+      <!-- Room listing table, hidden by default -->
+      <table class="table table-bordered" id="roomTable" style="display:none">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>View</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="roomTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let tableVisible = false; // Flag to toggle visibility of the room table
+
+    // Function to toggle room table visibility
+    function toggleRoomView() {
+      tableVisible = !tableVisible;
+      document.getElementById('roomTable').style.display = tableVisible ? 'table' : 'none';
+      if (tableVisible) loadRooms(); // Reload rooms if table is being shown
+    }
+
+    // Function to load rooms from localStorage and populate table
+    function loadRooms() {
+      const rooms = JSON.parse(localStorage.getItem("rooms")) || [];
+      const tableBody = document.getElementById("roomTableBody");
+      tableBody.innerHTML = ""; // Clear existing rows
+
+      // Loop through each room and create a row
+      rooms.forEach((room, index) => {
+  // Main row
+  const row = document.createElement("tr");
+  row.innerHTML = `
+    <td>${room.name}</td>
+    <td>${room.type}</td>
+    <td>${room.price}</td>
+    <td>${room.view}</td>
+    <td>${room.status}</td>
+    <td>
+      <button class="btn-edit" onclick="editRoom(${index})">Edit</button>
+      <button class="btn-delete" onclick="deleteRoom(${index})">Delete</button>
+      <button class="btn btn-info btn-sm" onclick="toggleDetails(${index})" id="details-btn-${index}">Details</button>
+    </td>
+  `;
+  tableBody.appendChild(row);
+
+  // Hidden details row
+  const detailsRow = document.createElement("tr");
+  detailsRow.id = `details-${index}`;
+  detailsRow.style.display = "none";
+  detailsRow.innerHTML = `
+    <td colspan="6"><strong>Description:</strong> ${room.description}</td>
+  `;
+  tableBody.appendChild(detailsRow);
+});
+
+    }
+
+    // Handle form submission for adding a new room
+    document.getElementById("addRoomForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form from reloading the page
+
+      const room = {
+        name: document.getElementById("roomName").value,
+        type: document.getElementById("roomType").value,
+        price: document.getElementById("roomPrice").value,
+        view: document.getElementById("roomView").value,
+        description: document.getElementById("roomDescription").value,
+        status: "available"
+      };
+
+      const rooms = JSON.parse(localStorage.getItem("rooms")) || [];
+      rooms.push(room); // Add new room to the list
+      localStorage.setItem("rooms", JSON.stringify(rooms)); // Save updated list
+      document.getElementById("addRoomForm").reset(); // Reset the form
+      if (tableVisible) loadRooms(); // Reload table if it's visible
+    });
+
+    // Function to delete a room by index
+    function deleteRoom(index) {
+      if (confirm("Are you sure you want to delete this room?")) {
+        const rooms = JSON.parse(localStorage.getItem("rooms")) || [];
+        rooms.splice(index, 1); // Remove room from array
+        localStorage.setItem("rooms", JSON.stringify(rooms)); // Update localStorage
+        loadRooms(); // Reload table
+      }
+    }
+
+    // Function to edit a room — loads details into form, then deletes it temporarily
+    function editRoom(index) {
+      if (confirm("Are you sure you want to edit this room? It will be removed temporarily until re-added.")) {
+        const rooms = JSON.parse(localStorage.getItem("rooms")) || [];
+        const room = rooms[index];
+        // Populate form with room details
+        document.getElementById("roomName").value = room.name;
+        document.getElementById("roomType").value = room.type;
+        document.getElementById("roomPrice").value = room.price;
+        document.getElementById("roomView").value = room.view;
+        document.getElementById("roomDescription").value = room.description;
+        deleteRoom(index); // Remove room so it can be updated
+      }
+    }
+
+    // Live search functionality for room name or view
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+      const searchTerm = this.value.toLowerCase();
+      const rows = document.querySelectorAll("#roomTableBody tr");
+      rows.forEach(row => {
+        const name = row.children[0].textContent.toLowerCase();
+        const view = row.children[3].textContent.toLowerCase();
+        // Show only matching rows
+        row.style.display = name.includes(searchTerm) || view.includes(searchTerm) ? "" : "none";
+      });
+    });
+    function toggleDetails(index) {
+  const detailsRow = document.getElementById(`details-${index}`);
+  const btn = document.getElementById(`details-btn-${index}`);
+  if (detailsRow.style.display === "none") {
+    detailsRow.style.display = "table-row";
+    btn.textContent = "Hide Details";
+  } else {
+    detailsRow.style.display = "none";
+    btn.textContent = "Details";
+  }
+}
+
+
+  </script>
+</body>
+</html>
+  

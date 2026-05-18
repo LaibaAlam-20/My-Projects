@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KHAAB GHAR - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* === Global Styles === */
+    body {
+      background: linear-gradient(#bfbaa1, #e8e5d1);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* === Navbar Styles === */
+    .navbar {
+      background-color: #6a644c;
+    }
+    .navbar-brand, .nav-link {
+      color: #fff !important;
+      font-weight: bold;
+    }
+
+    /* === Hero Section === */
+    .hero {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .hero h1 {
+      color: #5a4e3c;
+      font-size: 3rem;
+    }
+    .hero p {
+      color: #6e6a52;
+      font-size: 1.2rem;
+    }
+
+    /* === Card Styles === */
+    .card {
+      border-radius: 15px;
+      transition: transform 0.2s;
+      background-color: #bebe9a;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    /* === Button Style === */
+    .btn-dark {
+      background-color: #6a644c;
+      border: none;
+    }
+
+    /* === Footer Style === */
+    footer {
+      background-color: #6a644c;
+      color: #fff;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    /* === Info Section === */
+    .info-section {
+      background-color: #f8f7eb;
+      padding: 40px 20px;
+      margin-top: 40px;
+      border-radius: 10px;
+    }
+    .info-section h3 {
+      color: #5a4e3c;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .info-section p {
+      color: #6e6a52;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">
+        <img src="logo.png" alt="Logo" width="30" height="30" class="me-2">
+        KHAAB GHAR
+      </a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="signup.html">Sign Up</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <img src="logo.png" alt="KHAAB GHAR Logo" width="200">
+    <h1>Welcome to KHAAB GHAR</h1>
+    <p>Where dreams meet luxury. Enjoy elegant rooms, fine dining, and premium hospitality at our exclusive hotel.</p>
+  </section>
+
+  <!-- ===== SIGN UP & LOGIN CARDS ===== -->
+  <div class="container mt-4">
+    <div class="row text-center">
+      <!-- Sign Up Card -->
+      <div class="col-md-6 mb-4">
+        <div class="card p-4 shadow h-100 d-flex flex-column">
+          <h5 class="card-title">Create an Account</h5>
+          <p class="card-text">Sign up to book rooms and access special offers.</p>
+          <a href="signup.html" class="btn btn-dark mt-auto">Sign Up</a>
+        </div>
+      </div>
+
+      <!-- Login Card -->
+      <div class="col-md-6 mb-4">
+        <div class="card p-4 shadow h-100 d-flex flex-column">
+          <h5 class="card-title">Already a Member?</h5>
+          <p class="card-text">Login to manage your bookings and feedback.</p>
+          <a href="login.html" class="btn btn-dark mt-auto">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HOTEL INFO SECTION ===== -->
+  <div class="container info-section">
+    <h3>About KHAAB GHAR</h3>
+    <p>At KHAAB GHAR, we provide the perfect blend of luxury, comfort, and service. Our hotel offers world-class amenities designed for your relaxation and satisfaction. We ensure that your stay is memorable with our premium hospitality and elegant rooms.</p>
+    
+    <h5>Facilities</h5>
+    <ul>
+      <li>Spacious and elegant rooms with modern decor</li>
+      <li>Fine dining restaurant serving international cuisine</li>
+      <li>Wellness center with spa and fitness services</li>
+      <li>24/7 concierge service for all your needs</li>
+      <li>Free Wi-Fi access throughout the hotel</li>
+      <li>Swimming pool and outdoor lounge areas</li>
+    </ul>
+
+    <h5>Contact Information</h5>
+    <p>For reservations or inquiries, please contact us:</p>
+    <ul>
+      <li>Email: info@khaabghar.com</li>
+      <li>Phone: +123 456 7890</li>
+      <li>Address: KHAAB GHAR, Jarba Zhou Rd, Lamsa, Shigar, Gilgit-Baltistan, Pakistan</li>
+    </ul>
+
+    <h5>Location</h5>
+    <p>We are conveniently located in the Shigar, Gilgit-Baltistan, easily accessible by car and public transport.</p>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 KHAAB GHAR. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ===== SHORTCUT KEYS SCRIPT ===== -->
+  <script>
+    document.addEventListener('keydown', function(e) {
+      // Ctrl + S for Sign Up
+      if (e.ctrlKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        window.location.href = 'signup.html';
+      }
+      // Ctrl + L for Login
+      if (e.ctrlKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>

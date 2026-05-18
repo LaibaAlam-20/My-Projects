@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Phishing Detection System</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Phishing URL-EMAIL Detection System</h1>
+
+        <form action="/predict" method="post">
+
+            <input
+                type="text"
+                name="url"
+                placeholder="Enter URL or EMAIL"
+                required
+            >
+
+            <button type="submit">
+                Check URL or EMAIL
+            </button>
+
+        </form>
+
+        <h2>{{ prediction }}</h2>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+body {
+
+    font-family: Arial;
+
+    background: #602b59;
+
+    color: white;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    height: 100vh;
+
+}
+
+.container {
+
+    text-align: center;
+
+    background: #895582;
+
+    padding: 40px;
+
+    border-radius: 10px;
+
+    width: 500px;
+
+}
+
+input {
+
+    width: 80%;
+
+    padding: 10px;
+
+    margin-top: 20px;
+
+}
+
+button {
+
+    padding: 10px 20px;
+
+    margin-top: 20px;
+
+    cursor: pointer;
+
+}
